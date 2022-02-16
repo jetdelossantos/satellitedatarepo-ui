@@ -50,7 +50,7 @@ export class UserService {
     if (localStorage.getItem('users')) {
         return JSON.parse(localStorage.getItem('users') || '{}');
     } else {
-        return;
+        return JSON.parse('{}');
     }
   }
 
