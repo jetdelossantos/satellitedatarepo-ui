@@ -62,7 +62,13 @@ export class AuthenticationService {
         if (!this.jwtHelper.isTokenExpired(this.token)) {
           this.loggedInUsername = this.jwtHelper.decodeToken(this.token).sub;
           return true;
+        } else {
+          this.logOut();
+          return false;
         }
+      } else {
+        this.logOut();
+        return false;
       }
     } else {
       this.logOut();
