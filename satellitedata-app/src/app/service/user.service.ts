@@ -31,7 +31,7 @@ export class UserService {
     return this.http.get<CustomHttpResponse>(`${this.host}/user/resetpassword/${email}`);
   }
 
-  public updateProfileImage(formData: FormData): Observable<HttpEvent<any>> {
+  public updateProfileImage(formData: FormData): Observable<HttpEvent<User>> {
     return this.http.post<User>(`${this.host}/user/updateProfileImage`, formData,
     {reportProgress: true,
       observe: 'events'
