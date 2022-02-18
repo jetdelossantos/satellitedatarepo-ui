@@ -1,7 +1,7 @@
 export class User {
-    public userId: string;
-    public firstName: string;
-    public lastName: string;
+    public userid: string;
+    public firstname: string;
+    public lastname: string;
     public username: string;
     public email: string;
     public country: string;
@@ -9,15 +9,15 @@ export class User {
     public lastLoginDateDisplay: any;
     public joinDate: any;
     public profileImageUrl: string;
-    public active: boolean;
-    public notLocked: boolean;
+    public isactive: boolean;
+    public isnotlocked: boolean;
     public role: string;
     public authorities: [];
   
     constructor() {
-      this.userId = '';
-      this.firstName = '';
-      this.lastName = '';
+      this.userid = '';
+      this.firstname = '';
+      this.lastname = '';
       this.username = '';
       this.email = '';
       this.country = '';
@@ -25,8 +25,8 @@ export class User {
       this.lastLoginDateDisplay = null;
       this.joinDate = null;
       this.profileImageUrl = '';
-      this.active = false;
-      this.notLocked = false;
+      this.isactive = false;
+      this.isnotlocked = false;
       this.role = '';
       this.authorities = [];
     }

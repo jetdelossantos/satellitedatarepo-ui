@@ -15,7 +15,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  public getUsers(): Observable<User[]> | HttpErrorResponse {
+  public getUsers(): Observable<User[]>{
     return this.http.get<User[]>(`${this.host}/user/list`);
   } 
 
@@ -25,6 +25,10 @@ export class UserService {
 
   public updateUser(formData: FormData): Observable<User> {
     return this.http.post<User>(`${this.host}/user/update`, formData);
+  }
+
+  public changePassword(formData: FormData): Observable<User> {
+    return this.http.post<User>(`${this.host}/user/changepassword`, formData);
   }
 
   public resetPassword(email: string): Observable<CustomHttpResponse> {
@@ -53,19 +57,26 @@ export class UserService {
         return JSON.parse('{}');
     }
   }
+  public createChangePasswordFormData(currentusername: string, oldpassword:string, newpassword:string): FormData {
+    const formData = new FormData();
+    formData.append('currentUsername', currentusername);
+    formData.append('oldpassword', oldpassword);
+    formData.append('newpassword', newpassword);
+    return formData;
+  }
 
   public createUserFormData(loggedInUsername: string, user: User, profileImage: File): FormData {
     const formData = new FormData();
     formData.append('currentUsername', loggedInUsername);
-    formData.append('firstName', user.firstName);
-    formData.append('lastName', user.lastName);
+    formData.append('firstname', user.firstname);
+    formData.append('lastname', user.lastname);
     formData.append('username', user.username);
     formData.append('email', user.email);
     formData.append('country', user.country);
     formData.append('role', user.role);
     formData.append('profileImage', profileImage);
-    formData.append('isActive', JSON.stringify(user.active));
-    formData.append('isNonLocked', JSON.stringify(user.notLocked));
+    formData.append('isactive', JSON.stringify(user.isactive));
+    formData.append('isnotlocked', JSON.stringify(user.isnotlocked));
     return formData;
   }
 }
