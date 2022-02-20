@@ -31,6 +31,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private currentUsername: string;
   public fileStatus = new FileUploadStatus();
   public currentUser = new User();
+  public deleteUser = new User();
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService) {}
@@ -226,10 +227,11 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
-  public onDeleteUser(username: string): void {
+  public deleteThisUser(username: string): void {
     this.subscriptions.push(
       this.userService.deleteUser(username).subscribe(
         (response: CustomHttpResponse) => {
+          this.clickButton('closeDeleteUserModalButton');
           this.sendNotification(NotificationType.SUCCESS, response.message);
           this.getUsers(false);
         },
@@ -245,6 +247,12 @@ export class UserComponent implements OnInit, OnDestroy {
     this.currentUsername = editUser.username;
     this.clickButton('openUserEdit');
   }
+
+  public onDeleteUser(deleteUser: User): void {
+    this.deleteUser = deleteUser;
+    this.clickButton('openUserDelete');
+  }
+
 
   public searchUsers(searchTerm: string): void {
     const results: User[] = [];

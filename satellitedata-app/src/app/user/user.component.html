@@ -95,7 +95,7 @@
             <td class="">
               <div class="btn-group">
                 <button class="btn btn-outline-info" (click)="onEditUser(appUser)"><i class="fas fa-edit"></i></button>
-                <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUser(appUser?.username!)"><i
+                <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUser(appUser)"><i
                     class="fas fa-trash"></i></button>
               </div>
             </td>
@@ -108,12 +108,14 @@
     </button>
     <button [hidden]="true" type="button" id="openUserEdit" data-toggle="modal" data-target="#editUserModal">
     </button>
+    <button [hidden]="true" type="button" id="openUserDelete" data-toggle="modal" data-target="#deleteUserModal">
+    </button>
 
     <!-- reset password  -->
     <div [hidden]="!isAdmin" class="tab-pane fade" id="reset-password">
       <form #resetPasswordForm="ngForm" (ngSubmit)="onResetPassword(resetPasswordForm)">
         <fieldset>
-          <legend>User Password Management</legend>
+          <legend>Admin Reset Password Request</legend>
           <div class="form-group">
             <label for="exampleInputEmail1">Email address</label>
             <input type="email" name="reset-password-email" required ngModel class="form-control"
@@ -127,6 +129,108 @@
           </button>
         </fieldset>
       </form>
+
+    </div>
+
+    <!-- sat data  -->
+    <div [hidden]="!isAdmin" class="tab-pane fade" id="satellite-data">
+      <form #satDataForm="ngForm">
+        <fieldset>
+          <legend>Raw Satellite Data</legend>
+          <form class="form-inline my-2 my-lg-0 justify-content-center float-left">
+            <input name="searchSatTerm" #searchSatInput="ngModel" class="form-control mr-sm-2" ngModel
+              (ngModelChange)="searchUsers(searchInput.value)" type="search" placeholder="Filter sat data">
+          </form>
+        </fieldset>
+      </form>
+      <table class="table table-striped">
+        <thead class="table-borderless">
+          <tr class="text-center">
+            <th>ID</th>
+            <th>DATE/TIME</th>
+            <th>GST</th>
+            <th>DATA TYPE</th>
+            <th>TIME</th>
+            <th>SENSOR</th>
+            <th>CHECKSUM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr class="text-center">
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr class="text-center">
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="submit" [disabled]="resetPasswordForm.invalid" class="btn btn-primary">
+        <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;
+        <span *ngIf="refreshing">Loading...</span>
+        <span *ngIf="!refreshing">Download .txt data</span>
+      </button>
+    </div>
+
+    <!-- upload data  -->
+    <div [hidden]="!isAdmin" class="tab-pane fade" id="upload-data">
+      <form #uploadDataForm="ngForm">
+        <fieldset>
+          <legend>Upload Satellite Data Files</legend>
+          <div class="custom-file">
+            <label for="uploadFileInput">Please upload a valid data file in (.txt) format</label>
+            <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+          </div>
+        </fieldset>
+      </form>
+      <table class="table table-hover">
+        <thead class="table-borderless">
+          <tr class="text-center">
+            <th>File ID</th>
+            <th>File Name</th>
+            <th>Packet Format</th>
+            <th>Upload Date</th>
+            <th>Uploader</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td class="">
+              <div class="btn-group">
+                <button class="btn btn-outline-info"><i class="fas fa-edit"></i></button>
+                <button [hidden]="!isAdmin" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- user profile -->
@@ -180,14 +284,14 @@
                                   <div class="col">
                                     <div class="form-group">
                                       <label>First Name</label>
-                                      <input type="text" name="firstName" required [(ngModel)]="user.firstname"
+                                      <input type="text" name="firstname" required [(ngModel)]="user.firstname"
                                         class="form-control">
                                     </div>
                                   </div>
                                   <div class="col">
                                     <div class="form-group">
                                       <label>Last Name</label>
-                                      <input type="text" name="lastName" required [(ngModel)]="user.lastname"
+                                      <input type="text" name="lastname" required [(ngModel)]="user.lastname"
                                         class="form-control">
                                     </div>
                                   </div>
@@ -292,23 +396,45 @@
                 <div class="card">
                   <div class="card-body">
                     <h6 class="card-title font-weight-bold">Change Password</h6>
-                    <form #f="ngForm" (ngSubmit)="changePassword(f)" novalidate>
+                    <form #f="ngForm" (ngSubmit)="changePassword(f)">
 
                       <div class="form-group">
-                        <input ngModel name="oldpassword" id="oldpassword" placeholder="OLD PASSWORD" required
-                          class="form-control">
+                        <input ngModel type="password" name="oldpassword" id="oldpassword" placeholder="Old Password"
+                          #oldpassword="ngModel" required class="form-control" [minlength]="8" [maxlength]="16">
+                        <div class="alert alert-danger" *ngIf="!oldpassword.valid && oldpassword.dirty">
+                          <div *ngIf="oldpassword.errors['required']">Password is required.</div>
+                          <div *ngIf="oldpassword.errors['minlength']">Password minlength is 8 characters.</div>
+                          <div *ngIf="oldpassword.errors['maxlength']">Password maxlength is 16 characters.</div>
+                        </div>
                       </div>
 
                       <div class="form-group">
-                        <input ngModel name="newpassword" id="newpassword" placeholder="NEW PASSWORD" required 
-                        class="form-control">
+                        <input ngModel type="password" name="newpassword" id="newpassword" #newpassword="ngModel"
+                          placeholder="New Password" required class="form-control" [minlength]="8" [maxlength]="16">
+                        <div class="alert alert-danger" *ngIf="!newpassword.valid && newpassword.dirty">
+                          <div *ngIf="oldpassword.errors['required']">Password is required.</div>
+                          <div *ngIf="oldpassword.errors['minlength']">Password minlength is 8 characters.</div>
+                          <div *ngIf="oldpassword.errors['maxlength']">Password maxlength is 16 characters.</div>
+                        </div>
                       </div>
 
-                        <button class="btn btn-primary" type="submit">
-                          <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;
-                          <span *ngIf="refreshing">Loading...</span>
-                          <span *ngIf="!refreshing">Change Password</span>
-                        </button>
+                      <div class="form-group">
+                        <input ngModel type="password" name="repeatpassword" id="repeatpassword"
+                          #repeatpassword="ngModel" placeholder="Repeat password" required class="form-control"
+                          [minlength]="8" [maxlength]="16">
+                        <div class="alert alert-danger" *ngIf="!repeatpassword.valid && repeatpassword.dirty">
+                          <div *ngIf="repeatpassword != newpassword">Passwords do not match.</div>
+                          <div *ngIf="oldpassword.errors['required']">Password is required.</div>
+                          <div *ngIf="oldpassword.errors['minlength']">Password minlength is 8 characters.</div>
+                          <div *ngIf="oldpassword.errors['maxlength']">Password maxlength is 16 characters.</div>
+                        </div>
+                      </div>
+
+                      <button class="btn btn-primary" type="submit">
+                        <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;
+                        <span *ngIf="refreshing">Loading...</span>
+                        <span *ngIf="!refreshing">Change Password</span>
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -414,12 +540,12 @@
             <div>
               <form #newUserForm="ngForm" (ngSubmit)="onAddNewUser(newUserForm)">
                 <div class="form-group">
-                  <label for="firstName">First Name</label>
-                  <input type="text" name="firstName" required ngModel class="form-control">
+                  <label for="firstname">First Name</label>
+                  <input type="text" name="firstname" required ngModel class="form-control">
                 </div>
                 <div class="form-group">
-                  <label for="lastName">Last Name</label>
-                  <input type="text" name="lastName" required ngModel class="form-control">
+                  <label for="lastname">Last Name</label>
+                  <input type="text" name="lastname" required ngModel class="form-control">
                 </div>
                 <div class="form-group">
                   <label for="username">Username</label>
@@ -428,6 +554,10 @@
                 <div class="form-group">
                   <label for="email">Email</label>
                   <input type="email" name="email" required ngModel class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="country">Country</label>
+                  <input type="country" name="country" required ngModel class="form-control">
                 </div>
                 <div *ngIf="isAdmin" class="form-group">
                   <label for="authority">Role</label>
@@ -457,13 +587,13 @@
                 <fieldset class="form-group">
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" name="active" ngModel class="form-check-input">
+                      <input type="checkbox" name="isactive" ngModel class="form-check-input">
                       Active
                     </label>
                   </div>
                   <div class="form-check disabled">
                     <label class="form-check-label">
-                      <input type="checkbox" name="notLocked" ngModel class="form-check-input">
+                      <input type="checkbox" name="isnotlocked" ngModel class="form-check-input">
                       Unlocked
                     </label>
                   </div>
@@ -499,13 +629,13 @@
             <div class="">
               <form #editUserForm="ngForm">
                 <div class="form-group">
-                  <label for="firstName">First Name</label>
-                  <input type="text" name="firstName" [disabled]="!isAdminOrManager" required
+                  <label for="firstname">First Name</label>
+                  <input type="text" name="firstname" [disabled]="!isAdminOrManager" required
                     [(ngModel)]="editUser.firstname" class="form-control">
                 </div>
                 <div class="form-group">
-                  <label for="lastName">Last Name</label>
-                  <input type="text" name="lastName" [disabled]="!isAdminOrManager" required
+                  <label for="lastname">Last Name</label>
+                  <input type="text" name="lastname" [disabled]="!isAdminOrManager" required
                     [(ngModel)]="editUser.lastname" class="form-control">
                 </div>
                 <div class="form-group">
@@ -551,7 +681,7 @@
                     <label class="form-check-label">
                       <input name="active" type="checkbox" [disabled]="!isManager" [(ngModel)]="editUser.isactive"
                         class="form-check-input">
-                      Acitve <small [hidden]="isManager">(read only)</small>
+                      Active <small [hidden]="isManager">(read only)</small>
                     </label>
                   </div>
                   <div class="form-check disabled">
@@ -575,6 +705,29 @@
       </div>
     </div>
 
+    <!-- On Delete Modal -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Confirm Delete {{deleteUser?.firstname}}
+            {{deleteUser?.lastname}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="closeDeleteUserModalButton"
+              data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" (click)="deleteThisUser(deleteUser.username)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- modal edit user -->
     <div class="modal draggable fade bd-example-modal-lg" id="editUserModal" tabindex="-1" role="dialog"
       aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -591,12 +744,12 @@
             <div class="">
               <form #editUserForm="ngForm">
                 <div class="form-group">
-                  <label for="firstName">First Name</label>
-                  <input type="text" name="firstName" required [(ngModel)]="editUser.firstname" class="form-control">
+                  <label for="firstname">First Name</label>
+                  <input type="text" name="firstname" required [(ngModel)]="editUser.firstname" class="form-control">
                 </div>
                 <div class="form-group">
-                  <label for="lastName">Last Name</label>
-                  <input type="text" name="lastName" required [(ngModel)]="editUser.lastname" class="form-control">
+                  <label for="lastname">Last Name</label>
+                  <input type="text" name="lastname" required [(ngModel)]="editUser.lastname" class="form-control">
                 </div>
                 <div class="form-group">
                   <label for="username">Username</label>
@@ -607,8 +760,8 @@
                   <input type="email" name="email" required [(ngModel)]="editUser.email" class="form-control">
                 </div>
                 <div class="form-group">
-                  <label for="email">Country</label>
-                  <input type="email" name="email" required [(ngModel)]="editUser.country" class="form-control">
+                  <label for="country">Country</label>
+                  <input type="country" name="country" required [(ngModel)]="editUser.country" class="form-control">
                 </div>
                 <div class="form-group">
                   <label for="authority">Role</label>
