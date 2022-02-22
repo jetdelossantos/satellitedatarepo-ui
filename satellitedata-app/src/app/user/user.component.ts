@@ -32,6 +32,8 @@ export class UserComponent implements OnInit, OnDestroy {
   public fileStatus = new FileUploadStatus();
   public currentUser = new User();
   public deleteUser = new User();
+  public userPage = 1;
+  public userPageSize = 10;
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService) {}
@@ -163,8 +165,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
   public onUpdateProfileImage(): void {
     const formData = new FormData();
-    formData.append('username', this.user!.username!);
-    formData.append('profileImage', this.profileImage!);
+    formData.append('username', this.user.username);
+    formData.append('profileImage', this.profileImage);
     this.subscriptions.push(
       this.userService.updateProfileImage(formData).subscribe(
         (event: HttpEvent<any>) => {
@@ -187,7 +189,7 @@ export class UserComponent implements OnInit, OnDestroy {
       case HttpEventType.Response:
         if (event.status === 200) {
           this.user!.profileImageUrl = `${event.body.profileImageUrl}?time=${new Date().getTime()}`;
-          this.sendNotification(NotificationType.SUCCESS, `${event.body.firstName}\'s profile image updated successfully`);
+          this.sendNotification(NotificationType.SUCCESS, `${event.body.firstname}\'s profile image updated successfully`);
           this.fileStatus.status = 'done';
           break;
         } else {

@@ -26,7 +26,7 @@
         <a class="nav-item nav-link ml-3" (click)="changeTitle('Upload Sat Data File')" data-toggle="tab"
           href="#upload-data">
           <i class="fa fa-upload"></i>
-          Upload Data
+          Data Files
         </a>
         <a [hidden]="!isAdmin" class="nav-item nav-link ml-3" (click)="changeTitle('Settings')" data-toggle="tab"
           href="#reset-password">
@@ -76,7 +76,8 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody *ngFor="let appUser of users">
+        <tbody *ngFor="let appUser of users | slice: (userPage-1) * userPageSize: (userPage-1) * userPageSize + userPageSize">
+        <!-- <tbody *ngFor="let appUser of users"> -->
           <tr class="text-center">
             <td (click)="onSelectUser(appUser)">
               <img height="40" width="40" src="{{appUser?.profileImageUrl}}"
@@ -102,6 +103,7 @@
           </tr>
         </tbody>
       </table>
+      <ngb-pagination class="d-flex justify-content-center" aria-label="Default pagination" [(page)] = "userPage" [pageSize] = "userPageSize" [collectionSize]="users.length"></ngb-pagination>
     </div>
 
     <button [hidden]="true" type="button" id="openUserInfo" data-toggle="modal" data-target="#viewUserModal">
@@ -213,6 +215,7 @@
             <th>Upload Date</th>
             <th>Uploader</th>
             <th>Actions</th>
+            <th>Download</th>
           </tr>
         </thead>
         <tbody>
@@ -228,6 +231,11 @@
                 <button [hidden]="!isAdmin" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
               </div>
             </td>
+            <td class="">
+                <div class="btn-group">
+                  <button class="btn btn-outline-info"><i class="fas fa-download"></i></button>
+                </div>
+              </td>
           </tr>
         </tbody>
       </table>
@@ -260,8 +268,8 @@
                           <div class="text-center text-sm-left mb-2 mb-sm-0">
                             <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{user?.firstname}} {{user?.lastname}}</h4>
                             <p class="mb-0">{{user?.username}}</p>
-                            <div *ngIf="user?.lastLoginDateDisplay !== null" class="text-muted"><small>Last login:
-                                {{user?.lastLoginDateDisplay | date:'medium'}}</small></div>
+                            <div *ngIf="user?.lastlogindate !== null" class="text-muted"><small>Last login:
+                                {{user?.lastlogindate | date:'medium'}}</small></div>
                             <div class="mt-2">
                               <button (click)="updateProfileImage()" class="btn btn-primary" type="button">
                                 <i class="fa fa-fw fa-camera"></i>
@@ -270,7 +278,7 @@
                             </div>
                           </div>
                           <div class="text-center text-sm-right">
-                            <div class="text-muted"><small>Joined {{user?.joinDate | date:'mediumDate'}}</small></div>
+                            <div class="text-muted"><small>Joined {{user?.created | date:'mediumDate'}}</small></div>
                           </div>
                         </div>
                       </div>
@@ -480,12 +488,12 @@
                           <span [hidden]="!selectedUser?.isactive" class="badge badge-success">Active</span>
                           <span [hidden]="selectedUser?.isactive" class="badge badge-danger">Inactive</span>
                         </div>
-                        <div *ngIf="selectedUser?.lastLoginDateDisplay" class="text-muted"><small>Last Login:
-                            {{selectedUser?.lastLoginDateDisplay | date: 'medium'}}</small>
+                        <div *ngIf="selectedUser?.lastlogindate" class="text-muted"><small>Last Login:
+                            {{selectedUser?.lastlogindate | date: 'medium'}}</small>
                         </div>
                       </div>
                       <div class="text-center text-sm-right">
-                        <div class="text-muted"><small>Joined {{selectedUser?.joinDate | date: 'mediumDate'}}</small>
+                        <div class="text-muted"><small>Joined {{selectedUser?.created | date: 'mediumDate'}}</small>
                         </div>
                       </div>
                     </div>
@@ -525,7 +533,7 @@
       </div>
     </div>
 
-    <!-- model add user -->
+    <!-- modal add user -->
     <div [hidden]="!isAdmin" class="modal draggable fade bd-example-modal-lg" id="addUserModal" tabindex="-1"
       role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -668,9 +676,9 @@
                     <span class="input-group-text">Profile Picture </span>
                   </div>
                   <div class="custom-file">
-                    <!--<input type="file" accept="image/*" [disabled]="!isAdminOrManager" name="profileImage"
+                    <input type="file" accept="image/*" [disabled]="!isAdminOrManager" name="profileImage"
                     (change)="onProfileImageChange($event.target.files[0].name, $event.target.files[0])"
-                    class="custom-file-input">-->
+                    class="custom-file-input">
                     <label class="custom-file-label"><span [hidden]="!fileName">{{fileName}}</span>
                       <span [hidden]="fileName">Choose File</span>
                     </label>
@@ -778,9 +786,9 @@
                     <span class="input-group-text">Profile Picture </span>
                   </div>
                   <div class="custom-file">
-                    <!--<input type="file" accept="image/*" name="profileImage"
+                    <input type="file" accept="image/*" name="profileImage"
                   (change)="onProfileImageChange($event.target.files[0].name, $event.target.files[0])"
-                  class="custom-file-input">-->
+                  class="custom-file-input">
                     <label class="custom-file-label"><span [hidden]="!fileName">{{fileName}}</span>
                       <span [hidden]="fileName">Choose File</span>
                     </label>
@@ -815,9 +823,9 @@
 
     <!-- profile image change form -->
     <form enctype="multipart/form-data" style="display:none;">
-      <!--<input type="file"
+      <input type="file"
           (change)="onProfileImageChange($event.target.files[0].name, $event.target.files[0]); onUpdateProfileImage()"
-         name="profile-image-input" id="profile-image-input" placeholder="file" accept="image/*" />-->
+         name="profile-image-input" id="profile-image-input" placeholder="file" accept="image/*" />
     </form>
 
   </div>

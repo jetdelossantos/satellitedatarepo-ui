@@ -5,9 +5,9 @@ export class User {
     public username: string;
     public email: string;
     public country: string;
-    public lastLoginDate: any;
+    public lastlogindate: any;
     public lastLoginDateDisplay: any;
-    public joinDate: any;
+    public created: any;
     public profileImageUrl: string;
     public isactive: boolean;
     public isnotlocked: boolean;
@@ -21,9 +21,9 @@ export class User {
       this.username = '';
       this.email = '';
       this.country = '';
-      this.lastLoginDate = null;
+      this.lastlogindate = null;
       this.lastLoginDateDisplay = null;
-      this.joinDate = null;
+      this.created = null;
       this.profileImageUrl = '';
       this.isactive = false;
       this.isnotlocked = false;
