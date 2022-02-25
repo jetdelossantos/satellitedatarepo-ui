@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { User } from '../model/user';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { CustomHttpResponse } from '../model/custom-http-response';
+import { SatelliteFileData } from '../model/satellitefiledata';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,10 @@ export class UserService {
 
   public getUsers(): Observable<User[]>{
     return this.http.get<User[]>(`${this.host}/user/list`);
+  } 
+
+  public getFiles(): Observable<SatelliteFileData[]>{
+    return this.http.get<SatelliteFileData[]>(`${this.host}/satfile/list`);
   } 
 
   public addUser(formData: FormData): Observable<User> {

@@ -209,22 +209,22 @@
       <table class="table table-hover">
         <thead class="table-borderless">
           <tr class="text-center">
-            <th>File ID</th>
             <th>File Name</th>
-            <th>Packet Format</th>
             <th>Upload Date</th>
             <th>Uploader</th>
+            <th>File URL</th>
+            <th>Packet Format</th>
             <th>Actions</th>
             <th>Download</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody *ngFor="let satfiles of satellitefiledatas | slice: (filePage-1) * filePageSize: (filePage-1) * filePageSize + filePageSize">
           <tr class="text-center">
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td>{{satfiles?.filename}}</td>
+            <td>{{satfiles?.created | date:'mediumDate'}}</td>
+            <td>{{satfiles?.uploader}}</td>
+            <td href={{satfiles?.fileUrl}}>{{satfiles?.fileUrl}}</td>
+            <td>{{satfiles?.format}}</td>
             <td class="">
               <div class="btn-group">
                 <button class="btn btn-outline-info"><i class="fas fa-edit"></i></button>
@@ -239,6 +239,7 @@
           </tr>
         </tbody>
       </table>
+      <ngb-pagination class="d-flex justify-content-center" aria-label="Default pagination" [(page)] = "filePage" [pageSize] = "filePageSize" [collectionSize]="satellitefiledatas.length"></ngb-pagination>
     </div>
 
     <!-- user profile -->

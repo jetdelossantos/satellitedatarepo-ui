@@ -11,6 +11,7 @@ import { AuthenticationService } from '../service/authentication.service';
 import { Router } from '@angular/router';
 import { FileUploadStatus } from '../model/file-upload.status';
 import { Role } from '../enum/role.enum';
+import { SatelliteFileData } from '../model/satellitefiledata';
 
 @Component({
   selector: 'app-user',
@@ -21,6 +22,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private titleSubject = new BehaviorSubject<string>('Users');
   public titleAction$ = this.titleSubject.asObservable();
   public users: User[];
+  public satellitefiledatas: SatelliteFileData[];
   public user: User;
   public refreshing: boolean;
   public selectedUser: User;
@@ -34,6 +36,8 @@ export class UserComponent implements OnInit, OnDestroy {
   public deleteUser = new User();
   public userPage = 1;
   public userPageSize = 10;
+  public filePage = 1;
+  public filePageSize = 10;
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService) {}
@@ -41,7 +45,9 @@ export class UserComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this.authenticationService.getUserFromLocalCache();
     this.getUsers(true);
+    this.getSatelliteFileDatas(true);
   }
+  
 
   public changeTitle(title: string): void {
     this.titleSubject.next(title);
@@ -65,7 +71,25 @@ export class UserComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
 
+  public getSatelliteFileDatas(showNotification: boolean) {
+    this.refreshing = true;
+    this.subscriptions.push(
+      this.userService.getFiles().subscribe(
+        (response: SatelliteFileData[]) => {
+          this.satellitefiledatas = response;
+          this.refreshing = false;
+          if (showNotification) {
+            this.sendNotification(NotificationType.SUCCESS, `${response.length} satellite data file(s) loaded successfully.`);
+          }
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.refreshing = false;
+        }
+      )
+    );
   }
 
   public onSelectUser(selectedUser: User): void {
