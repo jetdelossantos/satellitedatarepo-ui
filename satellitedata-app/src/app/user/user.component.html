@@ -212,10 +212,9 @@
             <th>File Name</th>
             <th>Upload Date</th>
             <th>Uploader</th>
-            <th>File URL</th>
             <th>Packet Format</th>
-            <th>Actions</th>
             <th>Download</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody *ngFor="let satfiles of satellitefiledatas | slice: (filePage-1) * filePageSize: (filePage-1) * filePageSize + filePageSize">
@@ -223,19 +222,18 @@
             <td>{{satfiles?.filename}}</td>
             <td>{{satfiles?.created | date:'mediumDate'}}</td>
             <td>{{satfiles?.uploader}}</td>
-            <td href={{satfiles?.fileUrl}}>{{satfiles?.fileUrl}}</td>
             <td>{{satfiles?.format}}</td>
-            <td class="">
-              <div class="btn-group">
-                <button class="btn btn-outline-info"><i class="fas fa-edit"></i></button>
-                <button [hidden]="!isAdmin" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-              </div>
-            </td>
             <td class="">
                 <div class="btn-group">
                   <button class="btn btn-outline-info"><i class="fas fa-download"></i></button>
                 </div>
-              </td>
+            </td>
+            <td class="">
+              <div class="btn-group">
+                <button [hidden]="!isAdmin" class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+            
           </tr>
         </tbody>
       </table>
