@@ -1,0 +1,128 @@
+[
+    {
+        "id": 0,
+        "countrydetails": {
+            "name": "Kyutech",
+            "gst": "01"
+        }
+    },
+    {
+        "id": 1,
+        "countrydetails": {
+            "name": "Ghana",
+            "gst": "02"
+        }
+    },
+    {
+        "id": 2,
+        "countrydetails": {
+            "name": "Nigeria",
+            "gst": "03"
+        }
+    },
+    {
+        "id": 3,
+        "countrydetails": {
+            "name": "Mongolia",
+            "gst": "04"
+        }
+    },
+    {
+        "id": 4,
+        "countrydetails": {
+            "name": "Bangladesh",
+            "gst": "05"
+        }
+    },
+    {
+        "id": 5,
+        "countrydetails": {
+            "name": "Thailand",
+            "gst": "06"
+        }
+    },
+    {
+        "id": 6,
+        "countrydetails": {
+            "name": "Taiwan",
+            "gst": "07"
+        }
+    },
+    {
+        "id": 7,
+        "countrydetails": {
+            "name": "Bhutan",
+            "gst": "08"
+        }
+    },
+    {
+        "id": 8,
+        "countrydetails": {
+            "name": "Malaysia",
+            "gst": "09"
+        }
+    },
+    {
+        "id": 9,
+        "countrydetails": {
+            "name": "Philippines",
+            "gst": "0A"
+        }
+    },
+    {
+        "id": 10,
+        "countrydetails": {
+            "name": "Sri Lanka",
+            "gst": "0B"
+        }
+    },
+    {
+        "id": 11,
+        "countrydetails": {
+            "name": "Nepal",
+            "gst": "0C"
+        }
+    },
+    {
+        "id": 12,
+        "countrydetails": {
+            "name": "Costa Rica",
+            "gst": "0D"
+        }
+    },
+    {
+        "id": 13,
+        "countrydetails": {
+            "name": "Paraguay",
+            "gst": "0E"
+        }
+    },
+    {
+        "id": 14,
+        "countrydetails": {
+            "name": "Argentina",
+            "gst": "0F"
+        }
+    },
+    {
+        "id": 15,
+        "countrydetails": {
+            "name": "Sudan",
+            "gst": "10"
+        }
+    },
+    {
+        "id": 16,
+        "countrydetails": {
+            "name": "Zimbabwe",
+            "gst": "11"
+        }
+    },
+    {
+        "id": 17,
+        "countrydetails": {
+            "name": "Uganda",
+            "gst": "12"
+        }
+    }
+]

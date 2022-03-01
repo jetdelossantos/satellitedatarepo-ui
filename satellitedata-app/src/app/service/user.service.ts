@@ -7,6 +7,7 @@ import { User } from '../model/user';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { CustomHttpResponse } from '../model/custom-http-response';
 import { SatelliteFileData } from '../model/satellitefiledata';
+import { SatelliteDataBytes } from '../model/satellitedatabytes';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,35 @@ export class UserService {
     return this.http.get<SatelliteFileData[]>(`${this.host}/satfile/list`);
   } 
 
+  public getBytes(formData: FormData): Observable<SatelliteDataBytes[]>{
+    return this.http.post<SatelliteDataBytes[]>(`${this.host}/satbytes/getsatbytes`, formData);
+  } 
+
   public addUser(formData: FormData): Observable<User> {
     return this.http.post<User>(`${this.host}/user/add`, formData);
+  }
+
+  public uploadFile(formData: FormData): Observable<HttpEvent<SatelliteFileData>> {
+    return this.http.post<SatelliteFileData>(`${this.host}/satfile/uploadfile`, formData,
+    {reportProgress:true, 
+    observe: 'events'}
+    );
+  }
+
+  public downloadFile(fileuniqueid: string): Observable<HttpEvent<Blob>> {
+    return this.http.get(`${this.host}/satfile/downloadfile/${fileuniqueid}`,
+    {reportProgress:true, 
+     observe: 'events', 
+     responseType: 'blob'}
+    );
+  }
+
+  public downloadSatBytes(formData: FormData): Observable<HttpEvent<Blob>> {
+    return this.http.post(`${this.host}/satbytes/downloadsatbytes`, formData,
+    {reportProgress:true, 
+     observe: 'events', 
+     responseType: 'blob'}
+    );
   }
 
   public updateUser(formData: FormData): Observable<User> {
@@ -51,6 +79,10 @@ export class UserService {
     return this.http.delete<CustomHttpResponse>(`${this.host}/user/delete/${username}`);
   }
 
+  public deleteFile(fileuniqueid: string): Observable<CustomHttpResponse> {
+    return this.http.delete<CustomHttpResponse>(`${this.host}/satfile/delete/${fileuniqueid}`);
+  }
+
   public addUsersToLocalCache(users: User[]): void {
     localStorage.setItem('users', JSON.stringify(users));
   }
@@ -69,6 +101,7 @@ export class UserService {
     formData.append('newpassword', newpassword);
     return formData;
   }
+  
 
   public createUserFormData(loggedInUsername: string, user: User, profileImage: File): FormData {
     const formData = new FormData();

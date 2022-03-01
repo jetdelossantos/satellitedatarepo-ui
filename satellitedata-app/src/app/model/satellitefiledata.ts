@@ -1,4 +1,5 @@
 export class SatelliteFileData {
+    public fileuniqueid: string;
     public filesize: string;
     public filename: string;
     public fileUrl: string;
@@ -9,6 +10,7 @@ export class SatelliteFileData {
     public created: any;
   
     constructor() {
+      this.fileuniqueid = '';
       this.filesize = '';
       this.filename = '';
       this.fileUrl = '';

@@ -12,6 +12,10 @@ import { Router } from '@angular/router';
 import { FileUploadStatus } from '../model/file-upload.status';
 import { Role } from '../enum/role.enum';
 import { SatelliteFileData } from '../model/satellitefiledata';
+import { SatelliteDataBytes } from '../model/satellitedatabytes';
+import { saveAs} from 'file-saver'
+import countries from '../files/country.json'
+
 
 @Component({
   selector: 'app-user',
@@ -22,6 +26,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private titleSubject = new BehaviorSubject<string>('Users');
   public titleAction$ = this.titleSubject.asObservable();
   public users: User[];
+  public satdatabytes: SatelliteDataBytes[];
   public satellitefiledatas: SatelliteFileData[];
   public user: User;
   public refreshing: boolean;
@@ -38,17 +43,49 @@ export class UserComponent implements OnInit, OnDestroy {
   public userPageSize = 10;
   public filePage = 1;
   public filePageSize = 10;
+  public bytePage = 1;
+  public bytePageSize = 10;
+  public deleteFile: SatelliteFileData;
+  fileuploadtemp: any;
+  toggleupload: boolean;
+  satdatabytereportToggle: boolean;
+  formgst: string;
+  formdatatype: string;
+  formsensor: string;
+  countryList: any = countries;
+  gstlock: any;
+
+
+
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService) {}
 
   ngOnInit(): void {
     this.user = this.authenticationService.getUserFromLocalCache();
+    this.setGstOfUser(this.user.country);
     this.getUsers(true);
     this.getSatelliteFileDatas(true);
+    this.satdatabytes = [];
+    this.toggleupload = false;
+    this.satdatabytereportToggle = true;
   }
   
+  public setGstOfUser(country) {
+    this.gstlock = this.countryList[country].countrydetails.gst;
+  }
+  public downloadData() {
+    console.log(this.satdatabytes);
+  }
 
+  public resetData() {
+    this.satdatabytes = [];
+    this.satdatabytereportToggle = true;
+    this.formgst = null;
+    this.formdatatype = null;
+    this.formsensor = null;
+
+  } 
   public changeTitle(title: string): void {
     this.titleSubject.next(title);
   }
@@ -61,7 +98,7 @@ export class UserComponent implements OnInit, OnDestroy {
           this.userService.addUsersToLocalCache(response);
           this.users = response;
           this.refreshing = false;
-          if (showNotification) {
+          if (showNotification && response != null) {
             this.sendNotification(NotificationType.SUCCESS, `${response.length} user(s) loaded successfully.`);
           }
         },
@@ -78,11 +115,12 @@ export class UserComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.userService.getFiles().subscribe(
         (response: SatelliteFileData[]) => {
-          this.satellitefiledatas = response;
-          this.refreshing = false;
-          if (showNotification) {
-            this.sendNotification(NotificationType.SUCCESS, `${response.length} satellite data file(s) loaded successfully.`);
+            this.satellitefiledatas = response;
+            this.refreshing = false;
+            if (showNotification) {
+              this.sendNotification(NotificationType.SUCCESS, `${response.length} satellite data file(s) loaded successfully.`); 
           }
+          
         },
         (errorResponse: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
@@ -101,6 +139,123 @@ export class UserComponent implements OnInit, OnDestroy {
     this.fileName =  fileName;
     this.profileImage = profileImage;
   }
+
+  uploadMode(): void {
+    this.toggleupload = !this.toggleupload;
+    console.log(this.toggleupload);
+  }
+
+  onUploadFile(file): void {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('uploader', this.user.username);
+    this.subscriptions.push(
+      this.userService.uploadFile(formData).subscribe(
+        (event: HttpEvent<any>) => {
+          this.reportUploadFileProgress(event);
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.fileStatus.status = 'done';
+      }
+    )
+    );
+  }
+
+  reportUploadFileProgress(event: HttpEvent<any>) {
+    switch (event.type) {
+      case HttpEventType.UploadProgress:
+        this.fileStatus.percentage = Math.round(100 * event.loaded / event.total!);
+        this.fileStatus.status = 'progress';
+        break;
+      case HttpEventType.Response:
+        if (event.status === 200) {
+          this.sendNotification(NotificationType.SUCCESS, `File uploaded successfully`);
+          this.fileStatus.status = 'done';
+          this.ngOnInit();
+          this.uploadMode();
+          break;
+        } else {
+          this.sendNotification(NotificationType.ERROR, `Unable to upload fille. Please try again`);
+          break;
+        }
+      default:
+        `Finished all processes`;
+    }
+  }
+
+  onDownloadFile (fileuniqueid: string): void {
+    this.subscriptions.push(
+      this.userService.downloadFile(fileuniqueid).subscribe(
+        (event: HttpEvent<any>) => {
+          this.reportDownloadFileProgress(event);
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.fileStatus.status = 'done';
+      }
+    )
+    );
+  }
+  reportDownloadFileProgress(event: HttpEvent<any>) {
+    switch (event.type) {
+      case HttpEventType.DownloadProgress:
+        this.fileStatus.percentage = Math.round(100 * event.loaded / event.total!);
+        this.fileStatus.status = 'progress';
+        break;
+      case HttpEventType.Response:
+        if (event.status === 200) {
+          saveAs(new File([event.body], event.headers.get('File-Name'), {type: `${event.headers.get('Content-Type')};charset=utf-8`}));
+          this.sendNotification(NotificationType.SUCCESS, `File downloaded successfully`);
+          this.fileStatus.status = 'done';
+          break;
+        } else {
+          this.sendNotification(NotificationType.ERROR, `Unable to download. Please try again`);
+          break;
+        }
+      default:
+        `Finished all processes`;
+    }
+  }
+
+  onDownloadSatBytes(): void {
+    const formData = new FormData();
+    formData.append('gst', this.formgst + '%');
+    formData.append('datatype', this.formdatatype + '%');
+    formData.append('requester', this.user.username);
+    this.subscriptions.push(
+      this.userService.downloadSatBytes(formData).subscribe(
+        (event: HttpEvent<any>) => {
+          this.reportDownloadSatBytesProgress(event);
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.fileStatus.status = 'done';
+      }
+    )
+    );
+  }
+  reportDownloadSatBytesProgress(event: HttpEvent<any>) {
+    switch (event.type) {
+      case HttpEventType.DownloadProgress:
+        this.fileStatus.percentage = Math.round(100 * event.loaded / event.total!);
+        this.fileStatus.status = 'progress';
+        break;
+      case HttpEventType.Response:
+        if (event.status === 200) {
+          saveAs(new File([event.body], event.headers.get('File-Name'), {type: `${event.headers.get('Content-Type')};charset=utf-8`}));
+          this.sendNotification(NotificationType.SUCCESS, `File downloaded successfully`);
+          this.fileStatus.status = 'done';
+          break;
+        } else {
+          this.sendNotification(NotificationType.ERROR, `Unable to download. Please try again`);
+          break;
+        }
+      default:
+        `Finished all processes`;
+    }
+  }
+
 
   public changePassword(formdata: NgForm): void {
     this.currentUser = this.authenticationService.getUserFromLocalCache();
@@ -122,6 +277,29 @@ export class UserComponent implements OnInit, OnDestroy {
       )
     );
   }
+
+  public getSatBytes(formdata: NgForm) {
+    this.formgst = formdata.value.gst;
+    this.formdatatype = formdata.value.datatype;
+    const formData = new FormData();
+    formData.append('gst', formdata.value.gst + '%');
+    formData.append('datatype', formdata.value.datatype + '%');
+    this.subscriptions.push(
+      this.userService.getBytes(formData).subscribe(
+        (response: SatelliteDataBytes[]) => {
+          this.satdatabytes= response;
+          this.satdatabytereportToggle = false;
+          if (response != null){
+          this.sendNotification(NotificationType.SUCCESS, `${response.length} Sat Data Bytes(s) loaded successfully.`);
+          }
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+        }
+    )
+    );
+  }
+
   public saveNewUser(): void {
     this.clickButton('new-user-save');
   }
@@ -268,6 +446,21 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
+  public deleteThisFile(fileuniqueid: string): void {
+    this.subscriptions.push(
+      this.userService.deleteFile(fileuniqueid).subscribe(
+        (response: CustomHttpResponse) => {
+          this.clickButton('closeDeleteFileModalButton');
+          this.sendNotification(NotificationType.SUCCESS, response.message);
+          this.getSatelliteFileDatas(false);
+        },
+        (error: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, error.error.message);
+        }
+      )
+    );
+  }
+
   public onEditUser(editUser: User): void {
     this.editUser = editUser;
     this.currentUsername = editUser.username;
@@ -277,6 +470,15 @@ export class UserComponent implements OnInit, OnDestroy {
   public onDeleteUser(deleteUser: User): void {
     this.deleteUser = deleteUser;
     this.clickButton('openUserDelete');
+  }
+  public confirmUpload(file): void {
+    this.fileuploadtemp = file;
+    this.clickButton('openUserDelete');
+  }
+
+  public onDeleteFile(deleteFile: SatelliteFileData): void {
+    this.deleteFile = deleteFile;
+    this.clickButton('openFileDelete');
   }
 
 
