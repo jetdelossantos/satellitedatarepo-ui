@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  
+
   <!-- nav bar -->
   <nav class="navbar navbar-expand-md breadcrumb">
     <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -154,43 +154,64 @@
       <form #generateSatBytes="ngForm" class="form-inline" (ngSubmit)="getSatBytes(generateSatBytes)">
         <div *ngIf="user.country == '0'" class="form-group px-2 mb-2">
           <!--<input ngModel name="gst" id="gst" placeholder="GST" #gst="ngModel" required class="form-control">-->
-          <label>GST:&nbsp;</label>
+          <label>COUNTRY:&nbsp;&nbsp;</label>
           <select ngModel name="gst" id="gst" #gst="ngModel" [(ngModel)]="gstlock" required class="form-control">
-            <option *ngFor="let item of countryList" value={{item.countrydetails.gst}}>{{item.countrydetails.gst}}</option>
+            <option *ngFor="let item of countryList" value={{item.countrydetails.gst}}>{{item.countrydetails.name}}
+            </option>
           </select>
         </div>
         <div *ngIf="user.country != '0'" class="form-group px-2 mb-2">
-            <!--<input ngModel name="gst" id="gst" placeholder="GST" #gst="ngModel" required class="form-control">-->
-            <label>GST:&nbsp;</label>
-            <select ngModel name="gst" id="gst" #gst="ngModel" [(ngModel)]="gstlock" readonly disabled required class="form-control">
-              <option *ngFor="let item of countryList" value={{item.countrydetails.gst}}>{{item.countrydetails.gst}}</option>
+          <!--<input ngModel name="gst" id="gst" placeholder="GST" #gst="ngModel" required class="form-control">-->
+          <label>COUNTRY:&nbsp;&nbsp;</label>
+          <select ngModel name="gst" id="gst" #gst="ngModel" [(ngModel)]="gstlock" readonly disabled required
+            class="form-control">
+            <option *ngFor="let item of countryList" value={{item.countrydetails.gst}}>{{item.countrydetails.name}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group px-2 mb-2 ">
+            <label>GST:&nbsp;&nbsp; </label>
+              <input ngModel name="gst2" id="gst2" #gst2="ngModel" placeholder="All"  required class="form-control w-2 ">
+        </div>
+        <div class="form-group px-2 mb-2  ">
+          <label>DATA TYPE:&nbsp;&nbsp; </label>
+            <input ngModel name="datatype" id="datatype" #datatype="ngModel" placeholder="All" required class="form-control w-2 ">
+        </div>
+        <div class="form-group px-2 mb-2">
+            <label>FORMAT:&nbsp; &nbsp;</label>
+            <select ngModel name="format" id="format" #format="ngModel" required class="form-control" placeholder="All">
+              <option value="">All</option>
+              <option value="16">16</option>
+              <option value="32">32</option>
             </select>
           </div>
-        <div class="form-group px-2 mb-2">
-            <label>DATA TYPE:&nbsp; </label>
-          <input ngModel name="datatype" id="datatype" placeholder="Data Type" #datatype="ngModel"  required
-            class="form-control">
-
-        </div>
-        <div class="form-group px-2 mb-2">
-          <button class="btn btn-primary" type="submit">
-            <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;
-            <span *ngIf="refreshing">Loading...</span>
-            <span *ngIf="!refreshing">EXTRACT SATELLITE DATA</span>
+        <div class="form-group px-2 mb-2 ">
+          <button [hidden]="true" class="btn btn-primary" id="getSatBytesButton" type="submit">
           </button>
         </div>
-        <div [hidden]="satdatabytereportToggle" class="form-group px-2 mb-2">
-            <button class="btn btn-primary" type="button" (click)="resetData()">
-              <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;
-              <span *ngIf="refreshing">Loading...</span>
-              <span *ngIf="!refreshing">RESET TABLE</span>
-            </button>
+        <div [hidden]="true" class="form-group px-2 mb-2">
+          <button class="btn btn-primary" type="button" id="resetSatBytesButton" (click)="resetData()">
+          </button>
         </div>
       </form>
       <div *ngIf="fileStatus?.status==='progress'" class="progress mt-1">
         <div class="progress-bar bg-info" role="progressbar" [style.width.%]="fileStatus?.percentage" aria-valuenow="0"
           aria-valuemin="0" aria-valuemax="100">{{fileStatus?.percentage}}%</div>
       </div>
+
+      <div class="px-2 mb-2 ">
+        <button [hidden]="!satdatabytereportToggle" class="btn btn-primary px-2" type="button" (click)="clickButton('getSatBytesButton')">
+          <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;
+          <span *ngIf="refreshing">Loading...</span>
+          <span *ngIf="!refreshing">EXTRACT SATELLITE DATA</span>
+        </button>
+        <button [hidden]="satdatabytereportToggle"  class="btn btn-primary px-2" type="button" (click)="clickButton('resetSatBytesButton')">
+            <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>&nbsp;
+            <span *ngIf="refreshing">Loading...</span>
+            <span *ngIf="!refreshing">RESET TABLE</span>
+          </button>
+      </div>
+     
 
       <div [hidden]="satdatabytereportToggle">
         <table class="table table-striped">
@@ -203,7 +224,8 @@
               <th>CHECKSUM</th>
             </tr>
           </thead>
-          <tbody *ngFor="let satbyte of satdatabytes | slice: (bytePage-1) * bytePageSize: (bytePage-1) * bytePageSize + bytePageSize" >
+          <tbody
+            *ngFor="let satbyte of satdatabytes | slice: (bytePage-1) * bytePageSize: (bytePage-1) * bytePageSize + bytePageSize">
             <tr class="text-center">
               <td>{{satbyte?.gst}}</td>
               <td>{{satbyte?.datatype}}</td>
@@ -214,7 +236,8 @@
           </tbody>
         </table>
         <ngb-pagination class="d-flex justify-content-center" aria-label="Default pagination" [(page)]="bytePage"
-        [pageSize]="bytePageSize" [collectionSize]="satdatabytes.length"  [maxSize]="5" [boundaryLinks]="true" ></ngb-pagination>
+          [pageSize]="bytePageSize" [collectionSize]="satdatabytes.length" [maxSize]="5" [boundaryLinks]="true">
+        </ngb-pagination>
         <button type="button" class="btn btn-primary" (click)="onDownloadSatBytes()">
           <i *ngIf="refreshing" class="fas fa-spinner fa-spin"></i>
           <span *ngIf="refreshing">Loading...</span>
@@ -250,6 +273,7 @@
             <th>Upload Date</th>
             <th>Uploader</th>
             <th>Packet Format</th>
+            <th>File Size</th>
             <th>Download</th>
             <th>Delete</th>
           </tr>
@@ -261,6 +285,7 @@
             <td>{{satfiles?.created | date:'mediumDate'}}</td>
             <td>{{satfiles?.uploader}}</td>
             <td>{{satfiles?.format}}</td>
+            <td>{{getFileSize(satfiles?.filesize)}}</td>
             <td class="">
               <div class="btn-group">
                 <button class="btn btn-outline-info" (click)="onDownloadFile(satfiles.fileuniqueid)"><i
@@ -370,7 +395,8 @@
                                     <div class="form-group">
                                       <label>Country</label>
                                       <select name="country" required [(ngModel)]="user.country" class="form-control">
-                                        <option *ngFor="let item of countryList" value={{item.id}}>{{item.countrydetails.name}}</option>
+                                        <option *ngFor="let item of countryList" value={{item.id}}>
+                                          {{item.countrydetails.name}}</option>
                                       </select>
                                     </div>
                                   </div>
@@ -729,16 +755,16 @@
                 <fieldset class="form-group">
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input name="active" type="checkbox" [disabled]="!isManager" [(ngModel)]="editUser.isactive"
-                        class="form-check-input">
-                      Active <small [hidden]="isManager">(read only)</small>
+                      <input name="isactive" type="checkbox" [disabled]="!isAdminOrManager"
+                        [(ngModel)]="editUser.isactive" class="form-check-input">
+                      Active <small [hidden]="isAdminOrManager">(read only)</small>
                     </label>
                   </div>
                   <div class="form-check disabled">
                     <label class="form-check-label">
-                      <input name="locked" type="checkbox" [disabled]="!isManager" [(ngModel)]="editUser.isnotlocked"
-                        class="form-check-input">
-                      Unlocked <small [hidden]="isManager">(read only)</small>
+                      <input name="islocked" type="checkbox" [disabled]="!isAdminOrManager"
+                        [(ngModel)]="editUser.isnotlocked" class="form-check-input">
+                      Unlocked <small [hidden]="isAdminOrManager">(read only)</small>
                     </label>
                   </div>
                 </fieldset>

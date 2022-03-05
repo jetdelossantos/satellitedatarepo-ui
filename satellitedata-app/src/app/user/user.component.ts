@@ -50,7 +50,9 @@ export class UserComponent implements OnInit, OnDestroy {
   toggleupload: boolean;
   satdatabytereportToggle: boolean;
   formgst: string;
+  formgst2: string;
   formdatatype: string;
+  formformat: string;
   formsensor: string;
   countryList: any = countries;
   gstlock: any;
@@ -82,8 +84,10 @@ export class UserComponent implements OnInit, OnDestroy {
     this.satdatabytes = [];
     this.satdatabytereportToggle = true;
     this.formgst = null;
-    this.formdatatype = null;
-    this.formsensor = null;
+    this.formgst2 = '';
+    this.formdatatype = '';
+    this.formsensor = '';
+    this.formformat = '';
 
   } 
   public changeTitle(title: string): void {
@@ -130,6 +134,16 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
+  public getFileSize(filesize : String) {
+    let bytes = Number(filesize);
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    if (bytes === 0) return 'n/a'
+    let a: any = Math.floor(Math.log(bytes) / Math.log(1024))
+    const i = parseInt(a, 10)
+    if (i === 0) return `${bytes} ${sizes[i]}`
+    return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`
+  }
+
   public onSelectUser(selectedUser: User): void {
     this.selectedUser = selectedUser;
     this.clickButton('openUserInfo');
@@ -172,7 +186,7 @@ export class UserComponent implements OnInit, OnDestroy {
         if (event.status === 200) {
           this.sendNotification(NotificationType.SUCCESS, `File uploaded successfully`);
           this.fileStatus.status = 'done';
-          this.ngOnInit();
+          this.getSatelliteFileDatas(true);
           this.uploadMode();
           break;
         } else {
@@ -220,7 +234,12 @@ export class UserComponent implements OnInit, OnDestroy {
 
   onDownloadSatBytes(): void {
     const formData = new FormData();
-    formData.append('gst', this.formgst + '%');
+    if (this.formgst2 == null || this.formgst2 == ''){
+      formData.append('gst', this.formgst + '%');
+    } else {
+      formData.append('gst', this.formgst + '\t' + this.formgst2 + '%');
+    }
+    formData.append('format', this.formformat + '%');
     formData.append('datatype', this.formdatatype + '%');
     formData.append('requester', this.user.username);
     this.subscriptions.push(
@@ -280,10 +299,17 @@ export class UserComponent implements OnInit, OnDestroy {
 
   public getSatBytes(formdata: NgForm) {
     this.formgst = formdata.value.gst;
+    this.formgst2 = formdata.value.gst2;
     this.formdatatype = formdata.value.datatype;
+    this.formformat = formdata.value.format;
     const formData = new FormData();
-    formData.append('gst', formdata.value.gst + '%');
+    if (this.formgst2 == null || this.formgst2 == ''){
+      formData.append('gst', this.formgst + '%');
+    } else {
+      formData.append('gst', this.formgst + '\t' + this.formgst2 + '%');
+    }
     formData.append('datatype', formdata.value.datatype + '%');
+    formData.append('format', formdata.value.format + '%');
     this.subscriptions.push(
       this.userService.getBytes(formData).subscribe(
         (response: SatelliteDataBytes[]) => {
@@ -522,7 +548,7 @@ export class UserComponent implements OnInit, OnDestroy {
     }
   }
 
-  private clickButton(buttonId: string): void {
+  public clickButton(buttonId: string): void {
     document.getElementById(buttonId)!.click();
   }
 
