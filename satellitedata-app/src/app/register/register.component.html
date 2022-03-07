@@ -30,6 +30,7 @@
                 <input type="text" class="form-control" name="username" placeholder="Username" required ngModel #usernameInput="ngModel">
               </div>
               <span class="help-block" *ngIf="usernameInput.invalid && usernameInput.touched" style="color:red;">Please enter a username</span>
+
               <div class="input-group mb-3">
                 <div class="input-group-append">
                   <span class="input-group-text"><i class="fas fa-envelope"></i></span>
@@ -37,13 +38,20 @@
                 <input type="text" class="form-control" name="email" placeholder="Email" required ngModel #emailInput="ngModel">
               </div>
               <span class="help-block" *ngIf="emailInput.invalid && emailInput.touched" style="color:red;">Please enter an email.</span>
+
               <div class="input-group mb-2">
                 <div class="input-group-append">
                   <span class="input-group-text"><i class="fas fa-flag"></i></span>
                 </div>
-                <input type="text" class="form-control" name="country" placeholder="Country" required ngModel #countryInput="ngModel">
+                <select name="country" required placeholder="Country" class="form-control" ngModel #countryInput="ngModel">
+                  <option value="" disabled selected>Country</option>
+                  <option *ngFor="let item of countryList" value={{item.id}}>
+                    {{item.countrydetails.name}}</option>
+                </select>
               </div>
               <span class="help-block" *ngIf="countryInput.invalid && countryInput.touched" style="color:red;">Please select a country</span>
+
+
           <div class="d-flex justify-content-center mt-3 login_container">
             <button [disabled]="registerForm.invalid || showLoading" type="submit" name="button" class="btn login_btn">
               <i *ngIf="showLoading" class="fas fa-spinner fa-spin"></i>&nbsp;&nbsp;

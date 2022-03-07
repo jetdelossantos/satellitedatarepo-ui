@@ -6,6 +6,7 @@ import { AuthenticationService } from '../service/authentication.service';
 import { NotificationService } from '../service/notification.service';
 import { User } from '../model/user';
 import { NotificationType } from '../enum/notification-type.enum';
+import countries from '../files/country.json'
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,7 @@ import { NotificationType } from '../enum/notification-type.enum';
 export class RegisterComponent implements OnInit, OnDestroy {
   public showLoading: boolean | undefined;
   private subscriptions: Subscription[] = [];
+  countryList: any = countries;
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private notificationService: NotificationService) {}

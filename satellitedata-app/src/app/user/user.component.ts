@@ -76,6 +76,7 @@ export class UserComponent implements OnInit, OnDestroy {
   public setGstOfUser(country) {
     this.gstlock = this.countryList[country].countrydetails.gst;
   }
+  
   public downloadData() {
     console.log(this.satdatabytes);
   }
