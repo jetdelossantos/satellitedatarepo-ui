@@ -314,10 +314,13 @@ export class UserComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.userService.getBytes(formData).subscribe(
         (response: SatelliteDataBytes[]) => {
+          if (response != null){
           this.satdatabytes= response;
           this.satdatabytereportToggle = false;
-          if (response != null){
           this.sendNotification(NotificationType.SUCCESS, `${response.length} Sat Data Bytes(s) loaded successfully.`);
+          } else {
+            this.sendNotification(NotificationType.ERROR,"No data was found");
+            this.satdatabytereportToggle = true;
           }
         },
         (errorResponse: HttpErrorResponse) => {
@@ -524,6 +527,9 @@ export class UserComponent implements OnInit, OnDestroy {
       this.users = this.userService.getUsersFromLocalCache();
     }
   }
+  public get isUploader(): boolean {
+    return this.getUserRole() === Role.UPLOADER;
+  }
 
   public get isAdmin(): boolean {
     return this.getUserRole() === Role.ADMIN || this.getUserRole() === Role.SUPER_ADMIN;
@@ -535,6 +541,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
   public get isAdminOrManager(): boolean {
     return this.isAdmin || this.isManager;
+  }
+
+  public get isAdminOrManagerOrUploader(): boolean {
+    return this.isAdmin || this.isManager || this.isUploader;
   }
 
   private getUserRole(): string {

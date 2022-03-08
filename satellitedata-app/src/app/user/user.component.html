@@ -211,9 +211,9 @@
             <span *ngIf="!refreshing">RESET TABLE</span>
           </button>
       </div>
-     
 
       <div [hidden]="satdatabytereportToggle">
+
         <table class="table table-striped">
           <thead class="table-borderless">
             <tr class="text-center">
@@ -248,7 +248,7 @@
 
     <!-- upload data  -->
     <div class="tab-pane fade" id="upload-data">
-      <form [hidden]="!isAdminOrManager" class="form-inline" #uploadDataForm="ngForm" enctype="multipart/form-data">
+      <form [hidden]="!isAdminOrManagerOrUploader" class="form-inline" #uploadDataForm="ngForm" enctype="multipart/form-data">
         <fieldset>
           <legend>Upload Satellite Data Files</legend>
           <button [hidden]="toggleupload" type="button" (click)="uploadMode()" class="btn btn-primary"><i
@@ -407,7 +407,7 @@
                                       <label>Role</label><small [hidden]="isAdmin">(read only)</small>
                                       <select name="role" required [(ngModel)]="user.role" class="form-control">
                                         <option [hidden]="!isAdmin" value="ROLE_USER">USER</option>
-                                        <option [hidden]="!isAdmin" value="ROLE_HR">HR</option>
+                                        <option [hidden]="!isAdmin" value="ROLE_UPLOADER">UPLOADER</option>
                                         <option [hidden]="!isAdmin" value="ROLE_MANAGER">MANAGER</option>
                                         <option [hidden]="!isAdmin" value="ROLE_ADMIN">ADMIN</option>
                                         <option [hidden]="!isAdmin" value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
@@ -642,7 +642,7 @@
                   <label for="authority">Role</label>
                   <select name="role" required ngModel="ROLE_USER" class="form-control">
                     <option value="ROLE_USER">USER</option>
-                    <option value="ROLE_HR">HR</option>
+                    <option value="ROLE_UPLOADER">UPLOADER</option>
                     <option value="ROLE_MANAGER">MANAGER</option>
                     <option value="ROLE_ADMIN">ADMIN</option>
                     <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
@@ -736,7 +736,7 @@
                   <label for="authority">Role <small [hidden]="isAdmin">(read only)</small></label>
                   <select name="role" [disabled]="!isAdmin" required [(ngModel)]="editUser.role" class="form-control">
                     <option value="ROLE_USER">USER</option>
-                    <option value="ROLE_HR">HR</option>
+                    <option value="ROLE_UPLOADER">UPLOADER</option>
                     <option value="ROLE_MANAGER">MANAGER</option>
                     <option value="ROLE_ADMIN">ADMIN</option>
                     <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
@@ -871,7 +871,7 @@
                   <label for="authority">Role</label>
                   <select name="role" required [(ngModel)]="editUser.role" class="form-control">
                     <option value="ROLE_USER">USER</option>
-                    <option value="ROLE_HR">HR</option>
+                    <option value="ROLE_UPLOADER">UPLOADER</option>
                     <option value="ROLE_MANAGER">MANAGER</option>
                     <option value="ROLE_ADMIN">ADMIN</option>
                     <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
