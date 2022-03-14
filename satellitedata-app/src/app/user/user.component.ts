@@ -56,6 +56,9 @@ export class UserComponent implements OnInit, OnDestroy {
   formsensor: string;
   countryList: any = countries;
   gstlock: any;
+  totalUsers: number;
+  totalFiles: number;
+  totalBytes: any;
 
 
 
@@ -68,6 +71,7 @@ export class UserComponent implements OnInit, OnDestroy {
     this.setGstOfUser(this.user.country);
     this.getUsers(true);
     this.getSatelliteFileDatas(true);
+    this.getTotals();
     this.satdatabytes = [];
     this.toggleupload = false;
     this.satdatabytereportToggle = true;
@@ -106,6 +110,7 @@ export class UserComponent implements OnInit, OnDestroy {
           if (showNotification && response != null) {
             this.sendNotification(NotificationType.SUCCESS, `${response.length} user(s) loaded successfully.`);
           }
+          this.getTotals();
         },
         (errorResponse: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
@@ -124,7 +129,8 @@ export class UserComponent implements OnInit, OnDestroy {
             this.refreshing = false;
             if (showNotification) {
               this.sendNotification(NotificationType.SUCCESS, `${response.length} satellite data file(s) loaded successfully.`); 
-          }
+              this.getTotals();
+            }
           
         },
         (errorResponse: HttpErrorResponse) => {
@@ -556,6 +562,32 @@ export class UserComponent implements OnInit, OnDestroy {
       this.notificationService.notify(notificationType, message);
     } else {
       this.notificationService.notify(notificationType, 'An error occurred. Please try again.');
+    }
+  }
+
+  
+  async getTotals(): Promise<void> {
+
+    if (this.users != undefined) {
+      this.totalUsers = this.users.length;
+      console.log(
+        "Total Users: " + this.totalUsers + '\n');
+    }
+    if (this.satellitefiledatas != undefined) {
+      this.totalFiles = this.satellitefiledatas.length;
+      console.log(
+        "Total Files: " + this.totalFiles + '\n');
+    }
+    if (this.satellitefiledatas != undefined) {
+      let total: number = 0;
+      this.satellitefiledatas.forEach(element => {
+        let addend: number = Number(element.filesize);
+        total += addend
+      })
+      this.totalBytes = this.getFileSize(total.toString());
+      console.log(
+        "Total Bytes: " + this.totalBytes + '\n' 
+      )
     }
   }
 

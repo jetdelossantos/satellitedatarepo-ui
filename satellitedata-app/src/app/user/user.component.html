@@ -15,7 +15,11 @@
   <nav class="navbar navbar-expand-md breadcrumb">
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="nav nav-pills">
-        <a class="nav-item nav-link active ml-1" (click)="changeTitle('Users')" data-toggle="tab" href="#users">
+        <a class="nav-item nav-link active ml-1" (click)="changeTitle('Dashboard')" data-toggle="tab" href="#dashboard">
+          <i class="fa fa-globe"></i>
+          Dashboard
+        </a>
+        <a class="nav-item nav-link ml-3" (click)="changeTitle('Users')" data-toggle="tab" href="#users">
           <i class="fa fa-users"></i>
           Users
         </a>
@@ -44,9 +48,59 @@
 
   <!-- main content -->
   <div class="tab-content mt-3" id="myTabContent">
-
+  <!-- Dashboard-->
+  <div class="tab-pane fade show active" id="dashboard">
+    <div class="container">
+      <div class="row">
+          <div class="col-md-4 col-xl-3">
+              <div class="card bg-c-blue order-card">
+                  <div class="card-block">
+                      <h6 class="m-b-20">No. of Files Uploaded:</h6>
+                      <h2 class="text-right"><i class="fa fa-upload f-left"></i><span>{{totalFiles}}</span></h2>
+                      <!--Orders<span class="f-right">351</span></p>-->
+                  </div>
+              </div>
+          </div>
+          
+          <div class="col-md-4 col-xl-3">
+              <div class="card bg-c-green order-card">
+                  <div class="card-block">
+                      <h6 class="m-b-20">Total Bytes Uploaded:</h6>
+                      <h2 class="text-right"><i class="fa fa-cubes f-left"></i><span>{{totalBytes}}</span></h2>
+                      <!--<p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+                  </div>
+              </div>
+          </div>
+          
+          <div class="col-md-4 col-xl-3">
+              <div class="card bg-c-yellow order-card">
+                  <div class="card-block">
+                      <h6 class="m-b-20">No. of Active Users</h6>
+                      <h2 class="text-right"><i class="fa fa-users f-left"></i><span>{{totalUsers}}</span></h2>
+                      <!--<p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+                  </div>
+              </div>
+          </div>
+          
+          <div class="col-md-4 col-xl-3">
+              <div class="card bg-c-pink order-card">
+                  <div class="card-block">
+                      <h6 class="m-b-20">No. of Downloads</h6>
+                      <h2 class="text-right"><i class="fa fa-download f-left"></i><span>486</span></h2>
+                      <!--<p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+                  </div>
+              </div>
+          </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-xl-3">
+        hello
+      </div>
+    </div>
+  </div>
+  </div>
     <!-- user table -->
-    <div class="tab-pane fade show active" id="users">
+    <div class="tab-pane fade" id="users">
       <div class="mb-3 float-right">
         <div class="btn-group mr-2">
           <form class="form-inline my-2 my-lg-0 justify-content-center">
